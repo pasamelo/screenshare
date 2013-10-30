@@ -1,8 +1,8 @@
 var socket = undefined;
 var SessionKey;
 var oDOM;
-var CDN = 'http://yearofthecu.com:3000/';
-var SocketCDN = 'http://yearofthecu.com:3001/'
+var CDN = 'http://localhost:3000/';
+var SocketCDN = 'http://localhost:3001/';
 
 
 /* This block of code is to load inaccessible scripts that may be relative on mobile devices or behind a VPN or restricted network

@@ -1,4 +1,5 @@
-var socket = io.connect('http://yearofthecu.com:3001');
+var socket = io.connect(':3001');
+
 var SessionKey;
 function SendMouse(){
     document.onmousemove = function(e) {

@@ -1,30 +1,36 @@
 var http = require('http');
 var express = require('express');
 var app = express();
-var server = http.createServer(app).listen(3001);
-var io = require('socket.io').listen(server);
-io.set('log level', 1);
-io.set('transports', ['websocket']);
+var io = require('socket.io').listen(3001);
 
-app.configure(function(){
-    app.use(function(req, res, next) {
-        res.setHeader("X-UA-Compatible", "chrome=1");
-        return next();
-    });
-    app.use(express.static(__dirname + '/public'));
-});
+//asks to use Chrome plugin in IE
+var chromePluginMiddleware = function(req, res, next) {
+    res.setHeader("X-UA-Compatible", "chrome=1"); 
+    return next();
+}
+
+//configure socket.io
+io.set('log level', 1);
+io.set('transports', ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'flashsocket']);
+
+//configure ExpressJS
+app.use(chromePluginMiddleware);
+app.use(express.static(__dirname + '/public'));
+
+app.listen(3000);
+
 io.sockets.on('connection', function(socket) {
-    socket.on('CreateSession', function(msg){
-        socket.join(msg);
+    socket.on('CreateSession', function(room){
+        socket.join(room);
     });
-    socket.on('PageChange', function(msg){
-        socket.join(msg);
-        io.sockets.in(msg).emit('SessionStarted', '');
-        console.log('PageChange');
+    socket.on('PageChange', function(room){
+        console.log("pagechange: " +room);
+        socket.join(room);
+        io.sockets.in(room).emit('SessionStarted', '');
     });
-    socket.on('JoinRoom', function(msg){
-        socket.join(msg);
-        io.sockets.in(msg).emit('SessionStarted', '');
+    socket.on('JoinRoom', function(room){
+        socket.join(room);
+        io.sockets.in(room).emit('SessionStarted', '');
     });
     socket.on('ClientMousePosition', function(msg){
         socket.broadcast.to(socket.room).emit('ClientMousePosition', {PositionLeft:msg.PositionLeft, PositionTop:msg.PositionTop});
@@ -39,4 +45,3 @@ io.sockets.on('connection', function(socket) {
         socket.broadcast.to(msg.room).emit('DOMLoaded', '');
     });
 });
-app.listen(3000);
