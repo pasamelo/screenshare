@@ -1,17 +1,17 @@
 var http = require('http');
 var express = require('express');
 var app = express();
-var io = require('socket.io').listen(3001);
+var io = require('socket.io')(
+    {
+        'transports': ['polling', 'websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'flashsocket']
+    }
+    ).listen(3001);
 
 //asks to use Chrome plugin in IE
 var chromePluginMiddleware = function(req, res, next) {
     res.setHeader("X-UA-Compatible", "chrome=1"); 
     return next();
 }
-
-//configure socket.io
-io.set('log level', 1);
-io.set('transports', ['websocket', 'htmlfile', 'xhr-polling', 'jsonp-polling', 'flashsocket']);
 
 //configure ExpressJS
 app.use(chromePluginMiddleware);
